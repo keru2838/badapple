@@ -7,65 +7,68 @@
     body {
       margin: 0;
       background: black;
-      overflow: hidden;
-    }
-
-    video {
-      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       height: 100vh;
-      object-fit: cover;
-      display: none;
-    }
-
-    #startBtn {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 2em;
-      padding: 1em 2em;
-      background: #111;
+      overflow: hidden;
       color: white;
-      border: 2px solid white;
-      cursor: pointer;
-      z-index: 100;
-      animation: blink 1.5s infinite;
+      font-family: sans-serif;
     }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+    #video {
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+    #startBtn {
+      padding: 20px 40px;
+      background-color: #000;
+      border: 2px solid white;
+      color: white;
+      font-size: 1.5em;
+      cursor: pointer;
+      z-index: 10;
     }
   </style>
 </head>
 <body>
+  <button id="startBtn">Lancer 🍏</button>
+  <video id="video" src="badapple.mp4" playsinline></video>
 
-<button id="startBtn">🍎 Lancer la vidéo</button>
-<video id="video" src="badapple.mp4"></video>
+  <script>
+    const btn = document.getElementById('startBtn');
+    const video = document.getElementById('video');
 
-<script>
-  const btn = document.getElementById('startBtn');
-  const video = document.getElementById('video');
+    // Anti sélection, clic droit, glisser
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('selectstart', e => e.preventDefault());
+    document.addEventListener('dragstart', e => e.preventDefault());
 
-  btn.addEventListener('click', () => {
-    btn.style.display = 'none';
-    video.style.display = 'block';
-    video.muted = false;
-	video.volume = 1;
-    video.play();
-
-    // 🔒 Empêche la fermeture avec le bouton retour
+    // Empêche retour navigateur
     history.pushState(null, null, window.location.href);
-    window.onpopstate = function () {
+    window.onpopstate = () => {
       history.go(1);
     };
 
-    // 💀 Fermeture et redirection après la fin
-    video.onended = () => {
-      window.location.href = "fin.html";
-    };
-  });
-</script>
+    // Démarrage de la vidéo
+    btn.addEventListener('click', () => {
+      btn.style.display = 'none';
+      video.style.display = 'block';
+      video.muted = false;
+      video.volume = 1;
+      video.play();
 
+      // Plein écran
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.warn("Plein écran refusé :", err);
+        });
+      }
+
+      video.onended = () => {
+        window.location.href = "fin.html"; // Page de fin
+      };
+    });
+  </script>
 </body>
 </html>
